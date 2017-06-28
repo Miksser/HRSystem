@@ -15,7 +15,6 @@ class DataBase
     private $db_name = 'hr';
     private $db_user = 'postgres';
     private $db_pass = '1';
-    public $result = [];
     private $psqlconn;
 
     /**
@@ -73,7 +72,8 @@ class DataBase
         $tablesInDb = @pg_query($this->psqlconn, 'SELECT * FROM pg_tables WHERE tablename= ' . "'$table'");
 
         if ($tablesInDb) {
-            if (pg_num_rows($tablesInDb) >= 1) {
+            if (pg_num_rows($tablesInDb) == 1) {
+
                 return true;
             } else {
                 return false;
@@ -92,22 +92,34 @@ class DataBase
      */
     public function select($table, $rows = '*', $where = null, $order = null)
     {
-        $q = 'SELECT ' . $rows . 'FROM ' . $table;
-        if ($where != null) {
-            $q .= ' WHERE ' . $where;
-        }
-        if ($order != null) {
-            $q .= ' ORDER BY ' . $order;
-        }
-        if ($this->tableExists($table)) {
-            $query = pg_query($this->psqlconn, $q);
+        $result = [];
 
-            if ($query) {
-                $this->result = pg_fetch_assoc($query);
-                return $this->result;
+        $q = 'SELECT '.$rows.' FROM '.$table;
+        if($where != null)
+            $q .= ' WHERE '.$where;
+        if($order != null)
+            $q .= ' ORDER BY '.$order;
+        if($this->tableExists($table))
+        {
+            $query = @pg_query($this->psqlconn, $q);
+            if($query)
+            {
+                $this->numResults = pg_num_rows($query);
+
+                for($i = 0; $i < $this->numResults; $i++)
+                {
+                    $r = pg_fetch_assoc($query);
+                    array_push($result, $r);
+                }
+                return $result;
+            }
+            else
+            {
+                return false;
             }
         }
-        return false;
+        else
+            return false;
     }
 
     /**
@@ -121,7 +133,7 @@ class DataBase
     public function delete($table, $where = null)
     {
         if ($this->tableExists($table)) {
-            if (!$where = null) {
+            if (isset($where)) {
                 $delete = 'DELETE FROM ' . $table . 'WHERE' . $where;
             } else {
                 $delete = 'DELETE FROM ' . $table;
