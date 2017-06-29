@@ -1,5 +1,11 @@
 <?php
-include_once '../library/db.class.php';
 
-    $user = new DataBase();
-    $user->connect();
+include_once '../config/config.php';
+
+include_once '../library/mainFunctions.php';
+
+$controllerName = isset($_GET['controller']) ? ucfirst($_GET['controller']) : 'Index';
+
+$actionName = isset($_GET['action']) ? $_GET['action'] : 'index';
+
+loadPage($smarty, $db, $controllerName, $actionName);
