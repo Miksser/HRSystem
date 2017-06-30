@@ -31,9 +31,7 @@ function loadTemplate($smarty, $templateName)
  * @param int $die остановить работу сайта 1 да 0 нет
  */
 function d($value = null, $die = 1)
-
 {
-
     echo 'Debug: </br></pre>';
     print_r($value);
     echo '</pre>';

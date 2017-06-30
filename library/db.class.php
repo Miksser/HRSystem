@@ -6,10 +6,8 @@
  * Date: 23.06.17
  * Time: 23:24
  */
-
 class DataBase
 {
-
     private $db_host = 'localhost';
     private $db_port = '5432';
     private $db_name = 'hr';
@@ -22,7 +20,6 @@ class DataBase
      * If lie - start connect, and return con-true.
      * @return bool
      */
-
     public function connect()
 
     {
@@ -47,7 +44,6 @@ class DataBase
      * Check "con" on a true. If true - discon, and return con-false
      *
      */
-
     public function disconnect()
     {
         if ($this->con) {
@@ -66,7 +62,6 @@ class DataBase
      * @param $table - table name
      * @return bool
      */
-
     public function tableExists($table)
     {
         $tablesInDb = @pg_query($this->psqlconn, 'SELECT * FROM pg_tables WHERE tablename= ' . "'$table'");
@@ -94,32 +89,71 @@ class DataBase
     {
         $result = [];
 
-        $q = 'SELECT '.$rows.' FROM '.$table;
-        if($where != null)
-            $q .= ' WHERE '.$where;
-        if($order != null)
-            $q .= ' ORDER BY '.$order;
-        if($this->tableExists($table))
-        {
+        $q = 'SELECT ' . $rows . ' FROM ' . $table;
+        if ($where != null)
+            $q .= ' WHERE ' . $where;
+        if ($order != null)
+            $q .= ' ORDER BY ' . $order;
+        if ($this->tableExists($table)) {
             $query = @pg_query($this->psqlconn, $q);
-            if($query)
-            {
+            if ($query) {
                 $this->numResults = pg_num_rows($query);
 
-                for($i = 0; $i < $this->numResults; $i++)
-                {
+                for ($i = 0; $i < $this->numResults; $i++) {
                     $r = pg_fetch_assoc($query);
                     array_push($result, $r);
                 }
                 return $result;
-            }
-            else
-            {
+            } else {
                 return false;
             }
-        }
-        else
+        } else
             return false;
+    }
+
+    /**
+     * Request to get Join Table. Trial version.
+     * @param $ arrRow
+     * @param $arrFrom
+     * @param $arrJoin
+     * @param $arrOn
+     * @param $arrAnd
+     * @return bool|string
+     *
+     */
+    public function select_join($arrRow, $arrFrom, $arrJoin, $arrOn, $arrAnd)
+    {
+        if (isset($arrRow) && isset($arrFrom) && isset($arrJoin) && isset($arrAnd)) {
+
+            $row = implode(", ", $arrRow);
+            $from = implode(", ", $arrFrom);
+            $join = implode(', ', $arrJoin);
+            $on = implode(', ', $arrOn);
+
+            $q = 'SELECT ' . $row . ' FROM ' . $from . ' JOIN ' . $join . ' on ' . $on;
+        } else {
+            return false;
+        }
+        if (isset($arrAnd)) {
+            $and = implode($arrAnd);
+            $q .= ' AND ' . $and;
+        }
+        $query = @pg_query($this->psqlconn, $q);
+
+        if ($query) {
+            $result = [];
+            $this->numResults = @pg_num_rows($query);
+
+            for ($i = 0; $i < $this->numResults; $i++) {
+                $r = @pg_fetch_assoc($query);
+                array_push($result, $r);
+            }
+            return $result;
+        } else {
+            return false;
+        }
+
+
     }
 
     /**
@@ -129,7 +163,6 @@ class DataBase
      * @return bool
      *
      */
-
     public function delete($table, $where = null)
     {
         if ($this->tableExists($table)) {

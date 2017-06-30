@@ -10,7 +10,6 @@
 //подключение к бд
 require_once '../library/db.class.php';
 $db = new DataBase();
-
 $db->connect();
 
 
