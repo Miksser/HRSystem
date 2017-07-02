@@ -38,22 +38,3 @@ function d($value = null, $die = 1)
 
     if ($die) die;
 }
-
-/**
- * Преобразование результата работы функции выборки в ассоциативный массив
- *
- * @param $rs набор строк - результат работы Select
- * @return array|bool
- */
-
-
-function createSmartyRsArray($rs)
-{
-    if (!$rs) return false;
-
-    $smartyRs = [];
-    while ($row = mysql_fetch_assoc($rs)) {
-        $smartyRs[] = $row;
-    }
-    return $smartyRs;
-}

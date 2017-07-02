@@ -198,7 +198,6 @@ class DataBase
         if ($this->tableExists($table)) {
 
             $set = null;
-
             $k = array_keys($info);
 
             for ($i = 3; $i < count($info); $i++) {
@@ -209,12 +208,62 @@ class DataBase
                     $set .= $k[$i] . " = '" . $info[$k[$i]] . "'";
                 }
             }
+
             $q = 'UPDATE ' . $table . ' SET ' . $set;
 
             if (isset($info['id'])) {
                 $q .= ' WHERE id = ' . $info['id'];
             }
 
+            $query = @pg_query($this->psqlconn, $q);
+
+            if ($query) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Insert new info from DB
+     * @param $info $_POST request
+     * @return bool
+     * $I = 1 Because i=0 stores the name of the table
+     */
+    public function insert($info)
+    {
+        if (isset($info['table'])) {
+            $table = $info['table'];
+        } else {
+            return false;
+        }
+
+        if ($this->tableExists($table)) {
+
+            $column = null;
+            $value = null;
+            $k = array_keys($info);
+
+            for ($i = 1; $i < count($info); $i++) {
+
+                if ($info[$k[$i]]) {
+
+                    if ($i + 1 < count($info)) {
+                        $column .= $k[$i] . ', ';
+                        $value .= "'" . $info[$k[$i]] . "'" . ', ';
+                    } else {
+                        $column .= $k[$i];
+                        $value .= "'" . $info[$k[$i]] . "'";
+                    }
+                } else {
+                    continue;
+                }
+            }
+
+            $q = 'INSERT INTO ' . $table . "($column)" . ' VALUES ' . "($value)";
             $query = @pg_query($this->psqlconn, $q);
 
             if ($query) {
