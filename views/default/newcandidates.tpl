@@ -38,13 +38,14 @@
         <option value="5">Отклонен</option>
         <option value="6">Отказался</option>
     </select>
-    <input type="submit">
-</form>
 
+</form>
 Прикрепить вакансию: <br>
-<select id = 'vac' name="comb_vac_cand" multiple size="7">
+<select id = 'vacancy' name="cvc" multiple size="7">
     {foreach $rsVacancy as $item}
         <option value="{$item['id']}">{$item['v_name']}</option>
     {/foreach}
 </select>
+<br>
 
+<button id="create">Отправить</button>

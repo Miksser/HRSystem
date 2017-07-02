@@ -264,10 +264,11 @@ class DataBase
             }
 
             $q = 'INSERT INTO ' . $table . "($column)" . ' VALUES ' . "($value)";
+
             $query = @pg_query($this->psqlconn, $q);
 
             if ($query) {
-                return true;
+                return $q;
             } else {
                 return false;
             }
