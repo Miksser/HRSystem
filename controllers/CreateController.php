@@ -3,7 +3,6 @@
  * Add new candidates or vacancy
  */
 
-
 function candidatesAction($smarty, $db)
 {
     $rsVacancy = $db->select(vacancy);
@@ -16,44 +15,27 @@ function candidatesAction($smarty, $db)
     loadTemplate($smarty, 'footer');
 }
 
+function vacancyAction($smarty, $db)
+{
+    $rsCandidates = $db->select(candidates);
+
+    $smarty->assign('pageTitle', 'Добавить нового кандидата');
+    $smarty->assign('rsCandidates', $rsCandidates);
+
+    loadTemplate($smarty, 'header');
+    loadTemplate($smarty, 'nvacancy');
+    loadTemplate($smarty, 'footer');
+}
+
 function addAction($smarty, $db)
 {
-    $cvc = $_POST['cvc'];
+    $info = $_POST;
 
-    unset($_POST['cvc']);
+    $cvc = $info['cvc'];
 
-    $db->insert($_POST);
+    unset($info['cvc']);
 
-    if (count($cvc) > 0) {
+    $insert = $db->insert($info);
 
-        if ($_POST['table'] == 'candidates') {
-
-            $getEmail = "email = '" . $_POST['email'] . "'";
-
-            $getId = $db->select(candidates, '*', $getEmail);
-
-            foreach ($cvc as $item) {
-
-                $info = ["table" => "comb_vac_cand", "vac_id" => $item, "can_id" => $getId[0]['id']];
-                $db->insert($info);
-
-            }
-            return true;
-
-        } else if ($_POST['table'] == 'vacancy') {
-
-            $getName = "v_name = '" . $_POST['v_name'] . "'";
-
-            $getId = $db->select(vacancy, '*', $getName);
-
-            foreach ($cvc as $item) {
-
-                $info = ["table" => "comb_vac_cand", "can_id" => $item, "vac_id" => $getId[0]['id']];
-                $db->insert($info);
-            }
-            return true;
-        }
-    } else {
-        return false;
-    }
+    addPosition($info, $cvc, $db);
 }

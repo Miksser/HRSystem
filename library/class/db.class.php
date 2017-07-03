@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: mikser
- * Date: 23.06.17
- * Time: 23:24
- */
 class DataBase
 {
     private $db_host = 'localhost';
@@ -13,7 +7,7 @@ class DataBase
     private $db_name = 'hr';
     private $db_user = 'postgres';
     private $db_pass = '1';
-    private $psqlconn;
+    protected $psqlconn;
 
     /**
      * Connect to the DB. Check "con" on a lie.
@@ -33,7 +27,6 @@ class DataBase
             } else {
                 return false;
             }
-
         } else {
             return false;
         }
@@ -42,7 +35,6 @@ class DataBase
     /**
      * Disconnect to the DB
      * Check "con" on a true. If true - discon, and return con-false
-     *
      */
     public function disconnect()
     {
@@ -96,14 +88,10 @@ class DataBase
             $q .= ' ORDER BY ' . $order;
         if ($this->tableExists($table)) {
             $query = @pg_query($this->psqlconn, $q);
-            if ($query) {
-                $this->numResults = pg_num_rows($query);
 
-                for ($i = 0; $i < $this->numResults; $i++) {
-                    $r = pg_fetch_assoc($query);
-                    array_push($result, $r);
-                }
-                return $result;
+            if ($query) {
+                $arr = $this->createArray($query);
+                return $arr;
             } else {
                 return false;
             }
@@ -112,68 +100,18 @@ class DataBase
     }
 
     /**
-     * Request to get Join Table. Trial version.
-     * @param $ arrRow
-     * @param $arrFrom
-     * @param $arrJoin
-     * @param $arrOn
-     * @param $arrAnd
-     * @return bool|string
-     *
-     */
-    public function select_join($arrRow, $arrFrom, $arrJoin, $arrOn, $arrAnd)
-    {
-        if (isset($arrRow) && isset($arrFrom) && isset($arrJoin) && isset($arrAnd)) {
-
-            $row = implode(", ", $arrRow);
-            $from = implode(", ", $arrFrom);
-            $join = implode(', ', $arrJoin);
-            $on = implode(', ', $arrOn);
-
-            $q = 'SELECT ' . $row . ' FROM ' . $from . ' JOIN ' . $join . ' on ' . $on;
-        } else {
-            return false;
-        }
-        if (isset($arrAnd)) {
-            $and = implode($arrAnd);
-            $q .= ' AND ' . $and;
-        }
-        $query = @pg_query($this->psqlconn, $q);
-
-        if ($query) {
-            $result = [];
-            $this->numResults = @pg_num_rows($query);
-
-            for ($i = 0; $i < $this->numResults; $i++) {
-                $r = @pg_fetch_assoc($query);
-                array_push($result, $r);
-            }
-            return $result;
-        } else {
-            return false;
-        }
-
-
-    }
-
-    /**
      * Delete info from database;
-     * @param $table
-     * @param null $where
-     * @return bool
-     *
      */
     public function delete($table, $where = null)
     {
         if ($this->tableExists($table)) {
             if (isset($where)) {
-                $delete = 'DELETE FROM ' . $table . 'WHERE' . $where;
+                $delete = 'DELETE FROM ' . $table . ' WHERE ' . $where;
             } else {
                 $delete = 'DELETE FROM ' . $table;
             }
-
-            $sqlD = @pg_query($this->psqlconn, $delete);
-            if ($sqlD) {
+            $query = @pg_query($this->psqlconn, $delete);
+            if ($query) {
                 return true;
             } else {
                 return false;
@@ -191,31 +129,36 @@ class DataBase
      * @return bool
      */
 
-    public function update($table = null, $info)
+    public function update($info, $where = null)
     {
-        $table = isset($table) ? $table : $info['table'];
+        if (isset($info['table'])) {
+            $table = $info['table'];
+        } else {
+            return false;
+        }
 
         if ($this->tableExists($table)) {
+
+            unset($info['table']);
 
             $set = null;
             $k = array_keys($info);
 
-            for ($i = 3; $i < count($info); $i++) {
-
+            for ($i = 0; $i < count($info); $i++) {
                 if ($i + 1 < count($info)) {
-                    $set .= $k[$i] . " = '" . $info[$k[$i]] . "'" . ', ';
+                    $set .= $k[$i] . ' = $' . ($i+1) . ', ';
                 } else {
-                    $set .= $k[$i] . " = '" . $info[$k[$i]] . "'";
+                    $set .= $k[$i] . ' = $' . ($i+1);
                 }
-            }
+            };
 
             $q = 'UPDATE ' . $table . ' SET ' . $set;
 
-            if (isset($info['id'])) {
-                $q .= ' WHERE id = ' . $info['id'];
+            if ($where) {
+                $q .= ' WHERE ' . $where;
             }
 
-            $query = @pg_query($this->psqlconn, $q);
+            $query = @pg_query_params($this->psqlconn, $q, $info);
 
             if ($query) {
                 return true;
@@ -231,7 +174,7 @@ class DataBase
      * Insert new info from DB
      * @param $info $_POST request
      * @return bool
-     * $I = 1 Because i=0 stores the name of the table
+     *
      */
     public function insert($info)
     {
@@ -243,37 +186,40 @@ class DataBase
 
         if ($this->tableExists($table)) {
 
-            $column = null;
-            $value = null;
-            $k = array_keys($info);
+            unset($info['table']);
+            $info = array_diff($info, array(''));
+            $column = implode(', ', array_keys($info));
+            $ph = [];
 
-            for ($i = 1; $i < count($info); $i++) {
-
-                if ($info[$k[$i]]) {
-
-                    if ($i + 1 < count($info)) {
-                        $column .= $k[$i] . ', ';
-                        $value .= "'" . $info[$k[$i]] . "'" . ', ';
-                    } else {
-                        $column .= $k[$i];
-                        $value .= "'" . $info[$k[$i]] . "'";
-                    }
-                } else {
-                    continue;
-                }
-            }
-
-            $q = 'INSERT INTO ' . $table . "($column)" . ' VALUES ' . "($value)";
-
-            $query = @pg_query($this->psqlconn, $q);
-
-            if ($query) {
-                return $q;
-            } else {
-                return false;
+            for ($i = 0; $i < count($info); $i++) {
+                $n = $i + 1;
+                array_push($ph, "$$n");
             }
         } else {
             return false;
         }
+
+        $ph = implode(", ", $ph);
+        $q = 'INSERT INTO ' . $table . "($column)" . ' VALUES ' . "($ph)";
+        $query = @pg_query_params($this->psqlconn, $q, $info);
+
+        if ($query) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected function createArray($array)
+    {
+        $result = [];
+
+        $numResults = pg_num_rows($array);
+
+        for ($i = 0; $i < $numResults; $i++) {
+            $r = pg_fetch_assoc($array);
+            array_push($result, $r);
+        }
+        return $result;
     }
 }

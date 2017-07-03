@@ -31,7 +31,7 @@
                 </td>
             </tr>
             {$flag = true}
-            {foreach $rsCombVacCand as $item_vac name = cvc}
+            {foreach $rsCombVacCand as $item_vac}
                 {if $item['id'] == $item_vac['can_id']}
                     <tr>
                         <td></td>

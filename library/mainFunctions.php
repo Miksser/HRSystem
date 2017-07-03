@@ -38,3 +38,40 @@ function d($value = null, $die = 1)
 
     if ($die) die;
 }
+
+function addPosition($arr, $cvc, $db)
+{
+
+    if (count($cvc) > 0) {
+
+        if ($arr['table'] == 'candidates') {
+
+            $getEmail = "email = '" . $arr['email'] . "'";
+
+            $getId = $db->select(candidates, '*', $getEmail);
+
+            foreach ($cvc as $item) {
+
+                $info = ["table" => "comb_vac_cand", "vac_id" => $item, "can_id" => $getId[0]['id']];
+                $db->insert($info);
+
+            }
+            return true;
+
+        } elseif ($arr['table'] == 'vacancy') {
+
+            $getName = "v_name = '" . $arr['v_name'] . "'";
+
+            $getId = $db->select(vacancy, '*', $getName);
+
+            foreach ($cvc as $item) {
+
+                $info = ["table" => "comb_vac_cand", "can_id" => $item, "vac_id" => $getId[0]['id']];
+                $db->insert($info);
+            }
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
