@@ -5,18 +5,8 @@ $(document).ready(function () {
         var form = $('#createForm').serialize();
         var CreateBtn = $('#cvc').serialize();
         var data = form + '&' + CreateBtn.replace(/=/g, "[]=");
+        sendInfo('/method/createposition/', data)
 
-        $.ajax({
-            type: 'POST',
-            url: '/create/add/',
-            data: data,
-            success: function (data) {
-                console.log(data);
-            },
-            error: function (xhr, str) {
-                alert('Возникла ошибка: ' + xhr.responseCode);
-            }
-        });
     });
 
     $('#update').click(function () {
@@ -25,51 +15,66 @@ $(document).ready(function () {
         var CreateBtn = $('#cvc').serialize();
         var data = form + '&' + CreateBtn.replace(/=/g, "[]=");
         console.log(data);
-        $.ajax({
-            type: 'POST',
-            url: '/profile/updatevacancy/',
-            data: data,
-            success: function (data) {
-            },
-            error: function (xhr, str) {
-                alert('Возникла ошибка: ' + xhr.responseCode);
-            }
-        });
+        sendInfo('/method/updateposition/', data)
+
     });
 
 
 })
+function removeFromPosition(itemId) {
 
-function removeFromProfile(itemId) {
-    var can_id = $('#candidate').serialize();
-    var vac_id = 'vac_id=' + itemId;
-    var data = can_id + "&" + vac_id;
-    console.log(data);
-    $.ajax({
-        type: 'POST',
-        url: '/profile/removevacancy/',
-        data: data,
-        success: function (data) {
-            console.log(data);
-                $('#addVacancy_' + itemId).show();
-                $('#removeVacancy_' + itemId).hide();
-        }
-    })
+    var position = $('#position')["0"].attributes['name'].value;
+
+    if (position == 'can_id') {
+        var delete_id = 'vac_id=' + itemId;
+    } else if (position == 'vac_id') {
+        var delete_id = 'can_id=' + itemId;
+    } else {
+        return false;
+    }
+
+    var position_id = $('#position').serialize();
+    var data = position_id + "&" + delete_id;
+    var send = sendInfo('/method/removeposition/', data);
+    if (send) {
+        $('#addInfo_' + itemId).show();
+        $('#removeInfo_' + itemId).hide();
+    }
 };
 
-function addFromProfile(itemId) {
-    var can_id = $('#candidate').serialize();
-    var data = 'table=comb_vac_cand' + "&" + can_id + "&vac_id=" + itemId;
-    console.log(data);
-    $.ajax({
-        type: 'POST',
-        url: '/profile/addvacancy/',
-        data: data,
-        success: function (data) {
-            console.log(data);
-            $('#addVacancy_' + itemId).hide();
-            $('#removeVacancy_' + itemId).show();
-        }
-    })
+
+function addFromPosition(itemId) {
+    var position = $('#position')["0"].attributes['name'].value;
+    if (position == 'can_id') {
+        var add_id = 'vac_id=' + itemId;
+    } else if (position == 'vac_id') {
+        var add_id = 'can_id=' + itemId;
+    } else {
+        return false;
+    }
+
+    var position_id = $('#position').serialize();
+    var data = 'table=comb_vac_cand' + "&" + position_id + "&" + add_id;
+    var send = sendInfo('/method/addposition/', data);
+    if (send) {
+        $('#addInfo_' + itemId).hide();
+        $('#removeInfo_' + itemId).show();
+    }
 };
 
+function sendInfo(url, data) {
+    var result;
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: data,
+        async: false,
+        success: function (data) {
+            console.log(result = data);
+        },
+        error: function (xhr, str) {
+            result = false;
+        }
+    })
+    return result;
+}

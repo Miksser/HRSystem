@@ -157,7 +157,6 @@ class DataBase
             if ($where) {
                 $q .= ' WHERE ' . $where;
             }
-
             $query = @pg_query_params($this->psqlconn, $q, $info);
 
             if ($query) {

@@ -8,8 +8,11 @@
 </head>
 <body>
 <div id="header">
-    <h1>Система управления вакансиями</h1>
-    <div><a href="/create/candidates/">Создать новую вакансию</a></div>
+    <a href="/"><h1>Система управления вакансиями</h1></a>
+    <div><a href="/create/candidates/">Создать нового кандиата</a></div>
+    <div><a href="/create/vacancy/">Создать новую вакансию</a></div>
+    <div><a href="/profile/1/">кандиата</a></div>
+    <div><a href="/vacancy/1/">вакансию</a></div>
 </div>
 
 

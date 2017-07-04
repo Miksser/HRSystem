@@ -17,7 +17,7 @@ function candidatesAction($smarty, $db)
 
 function vacancyAction($smarty, $db)
 {
-    $rsCandidates = $db->select(candidates);
+    $rsCandidates = $db->select('candidates', 'concat(surname, \' \', first_name, \' \', middle_name)sfm');
 
     $smarty->assign('pageTitle', 'Добавить нового кандидата');
     $smarty->assign('rsCandidates', $rsCandidates);
@@ -25,17 +25,4 @@ function vacancyAction($smarty, $db)
     loadTemplate($smarty, 'header');
     loadTemplate($smarty, 'nvacancy');
     loadTemplate($smarty, 'footer');
-}
-
-function addAction($smarty, $db)
-{
-    $info = $_POST;
-
-    $cvc = $info['cvc'];
-
-    unset($info['cvc']);
-
-    $insert = $db->insert($info);
-
-    addPosition($info, $cvc, $db);
 }

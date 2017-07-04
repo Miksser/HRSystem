@@ -1,7 +1,7 @@
 <form id="createForm">
     <input type="hidden" id="table" name="table" value="candidates">
     {if isset($rsProfile[0]['id'])}
-        <input type="hidden" id="candidate" name="can_id" value="{$rsProfile[0]['id']}">
+        <input type="hidden" id="position" name="can_id" value="{$rsProfile[0]['id']}">
     {/if}
     <div>
         <label>
@@ -51,12 +51,12 @@
                 <a href="/vacancy/{$item['vac_id']}/">{$item['v_name']}</a>
             </div>
             <div style="display: table-cell">
-                <a href="#" style="display: none" id="addVacancy_{$item['vac_id']}"
-                   onclick="addFromProfile({$item['vac_id']});
+                <a href="#" style="display: none" id="addInfo_{$item['vac_id']}"
+                   onclick="addFromPosition({$item['vac_id']});
                            return false;">
                     <button>Добавить</button>
                 </a>
-                <a href="#" id="removeVacancy_{$item['vac_id']}" onclick="removeFromProfile({$item['vac_id']});
+                <a href="#" id="removeInfo_{$item['vac_id']}" onclick="removeFromPosition({$item['vac_id']});
                         return false;">
                     <button>Удалить</button>
                 </a>
@@ -64,6 +64,7 @@
         </div>
     {/foreach}
 </div>
+
 Прикрепить вакансию: <br>
 <select id='cvc' name="cvc" multiple size="7">
     {foreach $rsVacancy as $item}

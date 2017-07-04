@@ -14,7 +14,7 @@ class templateSelect extends DataBase
             $select_id = 'vac_id';
             $where_id = 'can_id';
         } elseif ($table == "candidates") {
-            $select = 'id, surname, first_name, middle_name';
+            $select = 'id, concat(surname, \' \', first_name, \' \', middle_name)sfm';
             $select_id = 'can_id';
             $where_id = 'vac_id';
         } else {
@@ -46,7 +46,7 @@ class templateSelect extends DataBase
      *
      */
 
-    public function select_join($arrRow, $arrFrom, $arrJoin, $arrOn, $arrAnd)
+/*    public function select_join($arrRow, $arrFrom, $arrJoin, $arrOn, $arrAnd)
     {
         if (isset($arrRow) && isset($arrFrom) && isset($arrJoin) && isset($arrOn)) {
 
@@ -61,6 +61,40 @@ class templateSelect extends DataBase
         }
         if (isset($arrAnd)) {
             $and = implode($arrAnd);
+            $q .= ' AND ' . $and;
+        }
+
+        $query = @pg_query($this->psqlconn, $q);
+
+        if ($query) {
+            $arr = $this->createArray($query);
+            return $arr;
+        } else {
+            return false;
+        }
+    }*/
+    public function select_join($table, $and)
+    {
+        if ($table == candidates) {
+
+            $row = 'cvc.can_id, cvc.vac_id, v.v_name';
+            $from = 'comb_vac_cand as cvc';
+            $join = 'vacancy as v';
+            $on = 'cvc.vac_id = v.id';
+
+        } elseif($table == vacancy) {
+            $row = 'cvc.can_id, cvc.vac_id, concat(c.surname, \' \', c.first_name, \' \', c.middle_name)sfm';
+            $from = 'comb_vac_cand as cvc';
+            $join = 'candidates as c';
+            $on = 'cvc.can_id = c.id';
+        } else {
+            return false;
+        }
+
+        $q = 'SELECT ' . $row . ' FROM ' . $from . ' JOIN ' . $join . ' on ' . $on;
+
+
+        if (isset($and)) {
             $q .= ' AND ' . $and;
         }
 
