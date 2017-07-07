@@ -39,6 +39,13 @@ function d($value = null, $die = 1)
     if ($die) die;
 }
 
+/**
+ * Attachment of candidates and vacancies
+ * @param $arr
+ * @param $cvc
+ * @param $db
+ * @return bool
+ */
 function addPosition($arr, $cvc, $db)
 {
 

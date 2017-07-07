@@ -5,38 +5,45 @@
     {/if}
     <div>
         <label>
-            Имя <input type="text" name="first_name" value="{$rsProfile[0]['first_name']}">
+            Имя <input type="text" name="first_name"
+                       value="{if isset($rsProfile[0]['first_name'])}{$rsProfile[0]['first_name']}{/if}">
         </label>
     </div>
     <div>
         <label>
-            Фамилия <input type="text" name="surname" value="{$rsProfile[0]['surname']}">
+            Фамилия <input type="text" name="surname"
+                           value="{if isset($rsProfile[0]['surname'])}{$rsProfile[0]['surname']}{/if}">
         </label>
     </div>
     <div>
         <label>
-            Отчество <input type="text" name="middle_name" value="{$rsProfile[0]['middle_name']}">
+            Отчество <input type="text" name="middle_name"
+                            value="{if isset($rsProfile[0]['surname'])}{$rsProfile[0]['surname']}{/if}">
         </label>
     </div>
     <div>
         <label>
-            Телефон <input type="text" name="phone" value="{$rsProfile[0]['phone']}">
+            Телефон <input type="text" name="phone"
+                           value="{if isset($rsProfile[0]['phone'])}{$rsProfile[0]['phone']}{/if}">
         </label>
     </div>
     <div>
         <label>
-            Email <input type="text" name="email" value="{$rsProfile[0]['email']}">
+            Email <input type="email" name="email" required
+                         value="{if isset($rsProfile[0]['email'])}{$rsProfile[0]['email']}{/if}">
         </label>
     </div>
     <div>
         <label>
-            Дата Контакта <input type="date" name="contact_date" value="{$rsProfile[0]['contact_date']}">
+            Дата Контакта <input type="date" name="contact_date"
+                                 value="{if isset($rsProfile[0]['contact_date'])}{$rsProfile[0]['contact_date']}{/if}">
         </label>
     </div>
     <select name="status">
         {$status = ['Новый', 'Приглашен', 'Принят', 'Отложен','Отклонен','Отказался']}
-        {for $i=1 to count($status)}
-            <option value="{$i}" {if ($rsProfile[0]['status'] == $i)}selected{/if}>{$status[$i-1]}</option>
+        {for $i=0 to count($status)-1}
+            <option value="{$status[$i]}"
+                    {if (isset($rsProfile[0]['status']) && $rsProfile[0]['status'] == $status[$i])}selected{/if}>{$status[$i]}</option>
         {/for}
     </select>
 </form>
@@ -45,24 +52,27 @@
     <span>Прикрепленные вакансии:</span>
 {/if}
 <div style="display: table;">
-    {foreach $rsCombVacCand as $item}
-        <div style="display: table-row">
-            <div style="display: table-cell">
-                <a href="/vacancy/{$item['vac_id']}/">{$item['v_name']}</a>
+    {if isset($rsCombVacCand)}
+        {foreach $rsCombVacCand as $item}
+            <div style="display: table-row">
+                <div style="display: table-cell">
+                    <a href="/vacancy/{$item['vac_id']}/">{$item['v_name']}</a>
+                </div>
+                <div style="display: table-cell">
+                    <a href="#" style="display: none" id="addInfo_{$item['vac_id']}"
+                       onclick="addFromPosition({$item['vac_id']}, 'can_id');
+                               return false;">
+                        <button>Добавить</button>
+                    </a>
+                    <a href="#" id="removeInfo_{$item['vac_id']}"
+                       onclick="removeFromPosition({$item['vac_id']}, 'can_id');
+                               return false;">
+                        <button>Удалить</button>
+                    </a>
+                </div>
             </div>
-            <div style="display: table-cell">
-                <a href="#" style="display: none" id="addInfo_{$item['vac_id']}"
-                   onclick="addFromPosition({$item['vac_id']});
-                           return false;">
-                    <button>Добавить</button>
-                </a>
-                <a href="#" id="removeInfo_{$item['vac_id']}" onclick="removeFromPosition({$item['vac_id']});
-                        return false;">
-                    <button>Удалить</button>
-                </a>
-            </div>
-        </div>
-    {/foreach}
+        {/foreach}
+    {/if}
 </div>
 
 Прикрепить вакансию: <br>

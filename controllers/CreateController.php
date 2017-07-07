@@ -5,7 +5,7 @@
 
 function candidatesAction($smarty, $db)
 {
-    $rsVacancy = $db->select(vacancy);
+    $rsVacancy = $db->select('vacancy');
 
     $smarty->assign('pageTitle', 'Добавить нового кандидата');
     $smarty->assign('rsVacancy', $rsVacancy);
@@ -17,7 +17,7 @@ function candidatesAction($smarty, $db)
 
 function vacancyAction($smarty, $db)
 {
-    $rsCandidates = $db->select('candidates', 'concat(surname, \' \', first_name, \' \', middle_name)sfm');
+    $rsCandidates = $db->select('candidates', 'id, concat(surname, \' \', first_name, \' \', middle_name)sfm');
 
     $smarty->assign('pageTitle', 'Добавить нового кандидата');
     $smarty->assign('rsCandidates', $rsCandidates);

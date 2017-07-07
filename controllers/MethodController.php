@@ -45,6 +45,7 @@ function updatepositionAction($smarty, $db)
     };
 
     $cvc = $info['cvc'];
+
     unset($info['cvc']);
 
     $db->update($info, "id = $id");

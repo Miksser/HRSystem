@@ -8,6 +8,7 @@ class DataBase
     private $db_user = 'postgres';
     private $db_pass = '1';
     protected $psqlconn;
+    private $con;
 
     /**
      * Connect to the DB. Check "con" on a lie.
@@ -124,7 +125,6 @@ class DataBase
     /**
      * Update info from the DB
      * The cycle takes values from the info[$_GET] and collects the list of cells to be updated.
-     * @param null $table
      * @param $info
      * @return bool
      */
@@ -209,6 +209,12 @@ class DataBase
         }
     }
 
+
+    /**
+     *Make an associative array for the return
+     * @param $array
+     * @return array
+     */
     protected function createArray($array)
     {
         $result = [];

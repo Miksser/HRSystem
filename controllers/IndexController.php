@@ -9,8 +9,8 @@ function indexAction($smarty, $db)
 {
     $ts = new templateSelect();
 
-    $rsCandidates = $db->select(candidates);
-    $rsVacancy = $db->select(Vacancy);
+    $rsCandidates = $db->select('candidates');
+    $rsVacancy = $db->select('vacancy');
     $rsCombVacCand = $ts->select_join(['cvc.can_id', 'cvc.vac_id', 'v.v_name', 'v.status'],['comb_vac_cand as cvc'],
         ['vacancy as v'], ['cvc.vac_id = v.id']);
 

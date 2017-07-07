@@ -18,13 +18,17 @@ $(document).ready(function () {
         sendInfo('/method/updateposition/', data)
 
     });
+    var flag = false;
+    $('.AttachedInfo').click(function () {
+        if (!flag) {
+            $('.showInfo').css('display', 'table-row');
+        } else {
+            $('.showInfo').css('display', 'none');
+        }
 
-
+    });
 })
-function removeFromPosition(itemId) {
-
-    var position = $('#position')["0"].attributes['name'].value;
-
+function removeFromPosition(itemId, position) {
     if (position == 'can_id') {
         var delete_id = 'vac_id=' + itemId;
     } else if (position == 'vac_id') {
@@ -43,8 +47,7 @@ function removeFromPosition(itemId) {
 };
 
 
-function addFromPosition(itemId) {
-    var position = $('#position')["0"].attributes['name'].value;
+function addFromPosition(itemId, position) {
     if (position == 'can_id') {
         var add_id = 'vac_id=' + itemId;
     } else if (position == 'vac_id') {
@@ -64,17 +67,18 @@ function addFromPosition(itemId) {
 
 function sendInfo(url, data) {
     var result;
+    console.log(data);
     $.ajax({
         type: 'POST',
         url: url,
         data: data,
         async: false,
         success: function (data) {
-            console.log(result = data);
+            result = true;
         },
         error: function (xhr, str) {
             result = false;
         }
-    })
+    });
     return result;
 }

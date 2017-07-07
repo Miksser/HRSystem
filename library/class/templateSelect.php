@@ -75,14 +75,14 @@ class templateSelect extends DataBase
     }*/
     public function select_join($table, $and)
     {
-        if ($table == candidates) {
+        if ($table == 'candidates') {
 
             $row = 'cvc.can_id, cvc.vac_id, v.v_name';
             $from = 'comb_vac_cand as cvc';
             $join = 'vacancy as v';
             $on = 'cvc.vac_id = v.id';
 
-        } elseif($table == vacancy) {
+        } elseif($table == 'vacancy') {
             $row = 'cvc.can_id, cvc.vac_id, concat(c.surname, \' \', c.first_name, \' \', c.middle_name)sfm';
             $from = 'comb_vac_cand as cvc';
             $join = 'candidates as c';
